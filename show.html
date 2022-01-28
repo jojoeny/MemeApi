@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Example of Text Block Over Image</title>
+<style>
+    .container{
+        position: relative;
+        display: inline-block; /* Make the width of box same as image */
+    }
+    .text-block{
+        position: absolute;
+        z-index: 999;
+        margin: 0 auto;
+        left: 0;
+        right: 0;        
+        text-align: center;
+        top: 40%; /* Adjust this value to move the positioned div up and down */
+        background: black;
+        font-family: Arial,sans-serif;
+        color: green;
+        width: 60%; /* Set the width of the positioned div */
+    }
+</style>
+</head> 
+<body>
+    <div class="container">
+    	<img src="uploads\2022-01-15T18-25-26.613Zimg_nature_wide.jpg" alt="Flying Memes">
+        <div class="text-block">
+            <h1>Flying Memes</h1>
+        </div>
+    </div>
+</body>
+</html>

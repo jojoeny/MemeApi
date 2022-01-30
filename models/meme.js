@@ -5,7 +5,9 @@ const memeSchema = mongoose.Schema({
     title: String,
     author: String,
     image: String,
-    votes: Number
+    votes: Number,
+    text_top: String,
+    text_bottom: String
  
 });
 

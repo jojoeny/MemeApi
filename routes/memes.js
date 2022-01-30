@@ -3,6 +3,8 @@ const mongoose = require('mongoose');
 const router = express.Router();
 const multer = require('multer');
 const Meme = require('../models/meme');
+const Jimp = require("jimp");
+const req = require('express/lib/request');
 
 const storage = multer.diskStorage({
     destination: function(req, file, cb) {
@@ -29,6 +31,7 @@ const upload = multer({
     }
 });
 
+
 router.get('/', (req, res) => {
     Meme.find().exec()
     .then(docs => {
@@ -47,15 +50,20 @@ router.post("/", upload.single('memeImage'), (req, res, next) => {
       title: req.body.title,
       author: req.body.author,
       image: req.file.path,
-      votes: req.body.votes
+      votes: req.body.votes,
+      text_top: req.body.text_top,
+      text_bottom: req.body.text_bottom,
+      
     });
     meme
       .save()
       .then(result => {
-        console.log(result);
+      
+        textOverlayTop(result.image, result.text_top, result.text_bottom);
+ 
         res.status(201).json({
           message: "Handling POST requests",
-          createdMeme: result
+          createdMemePath: result
         });
       })
       .catch(err => {
@@ -64,7 +72,42 @@ router.post("/", upload.single('memeImage'), (req, res, next) => {
           error: err
         });
       });
+      
   });
+
+  async function textOverlayTop(path, textTop, textBottom) {
+    
+    // Reading image
+    const image = await Jimp.read(path); 
+
+    const ext = image.getExtension();
+
+    // Defining the text font
+    const font = await Jimp.loadFont(Jimp.FONT_SANS_32_BLACK);
+
+    const x = image.bitmap.width;
+    const y = image.bitmap.height;
+ 
+    var textWidthTop = Jimp.measureText(font, textTop);
+    var textHightTop = Jimp.measureTextHeight(font, textTop);
+ 
+    var textWidthBottom = Jimp.measureText(font, textBottom);
+    var textHightBottom = Jimp.measureTextHeight(font, textBottom);
+ 
+    image.print(font, x/2.5, y/100, {
+        text: textTop,
+        alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER,
+        alignmentY: Jimp.VERTICAL_ALIGN_TOP              
+    }, textWidthTop, textHightTop);
+ 
+    image.print(font, x/2.5, y, {
+     text: textBottom,
+     alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER,
+     alignmentY: Jimp.VERTICAL_ALIGN_BOTTOM
+ }, textWidthBottom, textHightBottom);
+    // Writing image after processing
+    await image.writeAsync('uploads/' + 'new_meme'+ new Date().toISOString().replace(/:/g, '-') + `.${ext}`);
+ }
 
   router.get("/:memeid", (req, res, next) => {
       const id = req.params.memeid;
@@ -76,6 +119,7 @@ router.post("/", upload.single('memeImage'), (req, res, next) => {
       .catch(err => {
           console.log(err);
       });
+      
   });
 
 

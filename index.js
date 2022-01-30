@@ -14,10 +14,6 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 app.use("/memes", memeRoute);
-app.get('/', function(request, response){
-    response.sendFile(__dirname + '/show.html'); 
-});
-
 
 console.log("Image is processed succesfully");
 

@@ -2,7 +2,6 @@ const express = require('express');
 const memeRoute = require('./routes/memes');
 const mongoose = require('mongoose');
 const bodyParser = require("body-parser");
-const Jimp = require("jimp");
 require('dotenv').config();
 
 const port = process.env.PORT || 5000;
@@ -15,8 +14,6 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 app.use("/memes", memeRoute);
-
-console.log("Image is processed succesfully");
 
 app.listen(port, () => {
     console.log(`Server started on port ${port}`);    

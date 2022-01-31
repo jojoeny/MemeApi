@@ -30,7 +30,7 @@ const upload = multer({
     }
 });
 
-
+//get all memes
 router.get('/', (req, res) => {
     Meme.find().exec()
     .then(docs => {
@@ -42,6 +42,7 @@ router.get('/', (req, res) => {
 
 });
 
+//send a meme template with texts to display
 router.post("/", upload.single('memeImage'), (req, res, next) => {
     const meme = new Meme({
       _id: new mongoose.Types.ObjectId(),
@@ -57,7 +58,7 @@ router.post("/", upload.single('memeImage'), (req, res, next) => {
       .save()
       .then(result => {
       
-        textOverlayTop(result.image, result.text_top, result.text_bottom);
+        textOverlay(result.image, result.text_top, result.text_bottom);
  
         res.status(201).json({
           createdMemePath: result
@@ -72,7 +73,7 @@ router.post("/", upload.single('memeImage'), (req, res, next) => {
       
   });
 
-  async function textOverlayTop(path, textTop, textBottom) {
+  async function textOverlay(path, textTop, textBottom) {
     
     // Reading image
     const image = await Jimp.read(path); 
@@ -106,6 +107,7 @@ router.post("/", upload.single('memeImage'), (req, res, next) => {
     await image.writeAsync('uploads/' + 'new_meme'+ new Date().toISOString().replace(/:/g, '-') + `.${ext}`);
  }
 
+ //get meme by memeid
   router.get("/:memeid", (req, res, next) => {
       const id = req.params.memeid;
       Meme.findById(id)

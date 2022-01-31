@@ -4,7 +4,6 @@ const router = express.Router();
 const multer = require('multer');
 const Meme = require('../models/meme');
 const Jimp = require("jimp");
-const req = require('express/lib/request');
 
 const storage = multer.diskStorage({
     destination: function(req, file, cb) {
@@ -35,8 +34,7 @@ const upload = multer({
 router.get('/', (req, res) => {
     Meme.find().exec()
     .then(docs => {
-       // console.log(docs);
-        res.json({docs});
+       res.json({docs});
     })
     .catch(err => {
         console.log(err); 
@@ -62,7 +60,6 @@ router.post("/", upload.single('memeImage'), (req, res, next) => {
         textOverlayTop(result.image, result.text_top, result.text_bottom);
  
         res.status(201).json({
-          message: "Handling POST requests",
           createdMemePath: result
         });
       })

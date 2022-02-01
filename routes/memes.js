@@ -31,7 +31,7 @@ const upload = multer({
 });
 
 //get all memes
-router.get('/', (req, res) => {
+router.get('/all', (req, res) => {
     Meme.find().exec()
     .then(docs => {
        res.json({docs});
@@ -43,7 +43,7 @@ router.get('/', (req, res) => {
 });
 
 //send a meme template with texts to display
-router.post("/", upload.single('memeImage'), (req, res, next) => {
+router.get("/", upload.single('memeImage'), (req, res, next) => {
     const meme = new Meme({
       _id: new mongoose.Types.ObjectId(),
       title: req.body.title,
@@ -61,7 +61,7 @@ router.post("/", upload.single('memeImage'), (req, res, next) => {
         textOverlay(result.image, result.text_top, result.text_bottom);
  
         res.status(201).json({
-          createdMemePath: result
+          message: "meme create success"
         });
       })
       .catch(err => {

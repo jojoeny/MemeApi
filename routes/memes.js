@@ -54,7 +54,6 @@ router.get("/", upload.single('memeImage'), async (req, res) => {
       title: req.body.title,
       author: req.body.author,
       image: req.file.path,
-      votes: req.body.votes,
       text_top: req.body.text_top,
       text_bottom: req.body.text_bottom      
     });
@@ -73,10 +72,8 @@ router.get("/", upload.single('memeImage'), async (req, res) => {
     
     // Reading image
     const image = await Jimp.read(path.toString()); 
-    console.log(path)
     const savePath = 'uploads/' + `new${Path.basename(path.toString())}`;
-    console.log(savePath)
-
+    
     // Defining the text font
     const font = await Jimp.loadFont(Jimp.FONT_SANS_32_BLACK);
 

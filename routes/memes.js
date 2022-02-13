@@ -4,6 +4,7 @@ const router = express.Router();
 const multer = require('multer');
 const Meme = require('../models/meme');
 const Jimp = require("jimp");
+const Path = require('path');
 
 const storage = multer.diskStorage({
     destination: function(req, file, cb) {
@@ -43,7 +44,11 @@ router.get('/all', (req, res) => {
 });
 
 //send a meme template with texts to display
-router.get("/", upload.single('memeImage'), (req, res, next) => {
+router.get("/", upload.single('memeImage'), async (req, res) => {
+
+  const pathToFile = await textOverlay(req.file.path, req.body.text_top, req.body.text_bottom);
+  console.log(req.file)
+
     const meme = new Meme({
       _id: new mongoose.Types.ObjectId(),
       title: req.body.title,
@@ -51,34 +56,26 @@ router.get("/", upload.single('memeImage'), (req, res, next) => {
       image: req.file.path,
       votes: req.body.votes,
       text_top: req.body.text_top,
-      text_bottom: req.body.text_bottom,
-      
+      text_bottom: req.body.text_bottom      
     });
     meme
       .save()
-      .then(result => {
-      
-        textOverlay(result.image, result.text_top, result.text_bottom);
- 
-        res.status(201).json({
-          message: "meme create success"
-        });
-      })
       .catch(err => {
         console.log(err);
         res.status(500).json({
           error: err
         });
-      });
-      
+      });      
+      res.sendFile(pathToFile, { root: './' });
   });
 
   async function textOverlay(path, textTop, textBottom) {
     
     // Reading image
-    const image = await Jimp.read(path); 
-
-    const ext = image.getExtension();
+    const image = await Jimp.read(path.toString()); 
+    console.log(path)
+    const savePath = 'uploads/' + `new${Path.basename(path.toString())}`;
+    console.log(savePath)
 
     // Defining the text font
     const font = await Jimp.loadFont(Jimp.FONT_SANS_32_BLACK);
@@ -103,8 +100,11 @@ router.get("/", upload.single('memeImage'), (req, res, next) => {
      alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER,
      alignmentY: Jimp.VERTICAL_ALIGN_BOTTOM
  }, textWidthBottom, textHightBottom);
+
     // Writing image after processing
-    await image.writeAsync('uploads/' + 'new_meme'+ new Date().toISOString().replace(/:/g, '-') + `.${ext}`);
+     await image.writeAsync(savePath);
+
+        return savePath;
  }
 
  //get meme by memeid

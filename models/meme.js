@@ -7,8 +7,7 @@ const memeSchema = mongoose.Schema({
     image: String,
     votes: Number,
     text_top: String,
-    text_bottom: String
- 
+    text_bottom: String 
 });
 
 module.exports = mongoose.model('Meme', memeSchema);
